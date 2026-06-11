@@ -1,11 +1,10 @@
 package io.protocol4.androidvitality.resource
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -28,9 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.protocol4.androidvitality.ui.theme.AndroidVitalityTheme
 import kotlinx.coroutines.launch
-import kotlin.math.ceil
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,52 +42,50 @@ fun ResourceMonitorScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    AndroidVitalityTheme(darkTheme = uiState.isDarkMode) {
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            gesturesEnabled = activeScreen == "main",
-            drawerContent = {
-                SettingsDrawerContent(
-                    isDarkMode = uiState.isDarkMode,
-                    includeSensors = uiState.includeSensorsInReport,
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        gesturesEnabled = activeScreen == "main",
+        drawerContent = {
+            SettingsDrawerContent(
+                themeMode = uiState.themeMode,
+                includeSensors = uiState.includeSensorsInReport,
+                activeScreen = activeScreen,
+                onThemeModeChange = { viewModel.setThemeMode(it) },
+                onToggleSensors = { viewModel.setIncludeSensorsInReport(it) },
+                onNavigate = { screen ->
+                    scope.launch { drawerState.close() }
+                    activeScreen = screen
+                }
+            )
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                DiagnosticTopBar(
                     activeScreen = activeScreen,
-                    onToggleDarkMode = { viewModel.toggleDarkMode() },
-                    onToggleSensors = { viewModel.setIncludeSensorsInReport(it) },
-                    onNavigate = { screen ->
-                        scope.launch { drawerState.close() }
-                        activeScreen = screen
+                    onMenuClick = { scope.launch { drawerState.open() } },
+                    onBackClick = { activeScreen = "main" },
+                    onExportClick = {
+                        val report = viewModel.exportReport()
+                        val sendIntent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, report)
+                            type = "text/plain"
+                        }
+                        context.startActivity(Intent.createChooser(sendIntent, null))
                     }
                 )
             }
-        ) {
-            Scaffold(
-                topBar = {
-                    DiagnosticTopBar(
-                        activeScreen = activeScreen,
-                        onMenuClick = { scope.launch { drawerState.open() } },
-                        onBackClick = { activeScreen = "main" },
-                        onExportClick = {
-                            val report = viewModel.exportReport()
-                            val sendIntent = Intent().apply {
-                                action = Intent.ACTION_SEND
-                                putExtra(Intent.EXTRA_TEXT, report)
-                                type = "text/plain"
-                            }
-                            context.startActivity(Intent.createChooser(sendIntent, null))
-                        }
+        ) { innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+                when (activeScreen) {
+                    "privacy" -> PrivacyPolicyScreen()
+                    "sensors" -> SensorListScreen(sensors = uiState.sensors)
+                    "license" -> LicenseScreen()
+                    else -> MainDiagnosticsScreen(
+                        uiState = uiState,
+                        onViewSensors = { activeScreen = "sensors" }
                     )
-                }
-            ) { innerPadding ->
-                Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-                    when (activeScreen) {
-                        "privacy" -> PrivacyPolicyScreen()
-                        "sensors" -> SensorListScreen(sensors = uiState.sensors)
-                        "license" -> LicenseScreen()
-                        else -> MainDiagnosticsScreen(
-                            uiState = uiState,
-                            onViewSensors = { activeScreen = "sensors" }
-                        )
-                    }
                 }
             }
         }
@@ -147,10 +142,10 @@ private fun DiagnosticTopBar(
 
 @Composable
 private fun SettingsDrawerContent(
-    isDarkMode: Boolean,
+    themeMode: ThemeMode,
     includeSensors: Boolean,
     activeScreen: String,
-    onToggleDarkMode: () -> Unit,
+    onThemeModeChange: (ThemeMode) -> Unit,
     onToggleSensors: (Boolean) -> Unit,
     onNavigate: (String) -> Unit
 ) {
@@ -174,24 +169,36 @@ private fun SettingsDrawerContent(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(20.dp))
-        
-        NavigationDrawerItem(
-            label = { Text("Dark Mode", fontWeight = FontWeight.SemiBold) },
-            selected = false,
-            onClick = onToggleDarkMode,
-            icon = { Icon(if (isDarkMode) Icons.Default.DarkMode else Icons.Default.LightMode, null) },
-            badge = { 
-                Switch(
-                    checked = isDarkMode, 
-                    onCheckedChange = { onToggleDarkMode() },
-                    thumbContent = if (isDarkMode) {
-                        { Icon(Icons.Default.Check, null, Modifier.size(12.dp)) }
-                    } else null
-                ) 
-            },
-            modifier = Modifier.padding(horizontal = 12.dp)
+
+        Text(
+            "Theme Mode",
+            modifier = Modifier.padding(horizontal = 28.dp, vertical = 8.dp),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Bold
+        )
+
+        ThemeOption(
+            label = "Light",
+            selected = themeMode == ThemeMode.LIGHT,
+            icon = Icons.Default.LightMode,
+            onClick = { onThemeModeChange(ThemeMode.LIGHT) }
+        )
+        ThemeOption(
+            label = "Dark",
+            selected = themeMode == ThemeMode.DARK,
+            icon = Icons.Default.DarkMode,
+            onClick = { onThemeModeChange(ThemeMode.DARK) }
+        )
+        ThemeOption(
+            label = "System Default",
+            selected = themeMode == ThemeMode.SYSTEM,
+            icon = Icons.Default.SettingsBrightness,
+            onClick = { onThemeModeChange(ThemeMode.SYSTEM) }
         )
         
+        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp, horizontal = 28.dp), color = MaterialTheme.colorScheme.outlineVariant)
+
         NavigationDrawerItem(
             label = { Text("Include Sensors in Report", fontWeight = FontWeight.SemiBold) },
             selected = false,
@@ -230,6 +237,22 @@ private fun SettingsDrawerContent(
 }
 
 @Composable
+private fun ThemeOption(
+    label: String,
+    selected: Boolean,
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
+    NavigationDrawerItem(
+        label = { Text(label) },
+        selected = selected,
+        onClick = onClick,
+        icon = { Icon(icon, null) },
+        modifier = Modifier.padding(horizontal = 12.dp)
+    )
+}
+
+@Composable
 fun MainDiagnosticsScreen(
     uiState: ResourceMonitorUiState,
     onViewSensors: () -> Unit
@@ -250,7 +273,7 @@ fun MainDiagnosticsScreen(
                 onClick = onViewSensors,
                 modifier = Modifier.fillMaxWidth().height(60.dp),
                 shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
             ) {
                 Icon(Icons.Default.Sensors, null)
                 Spacer(Modifier.width(12.dp))
@@ -278,7 +301,7 @@ private fun RamCard(info: MemoryInfo?) {
     val usedRam = totalRam - availRam
     
     val commonRamSizes = listOf(1, 2, 3, 4, 6, 8, 12, 16, 24, 32)
-    val marketedRam = commonRamSizes.firstOrNull { it >= totalRam }?.toDouble() ?: ceil(totalRam)
+    val marketedRam = commonRamSizes.firstOrNull { it >= totalRam }?.toDouble() ?: kotlin.math.ceil(totalRam)
     val reservedRam = marketedRam - totalRam
 
     val animatedProgress by animateFloatAsState(
@@ -363,7 +386,11 @@ fun SensorListScreen(sensors: List<SensorDetail>) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(sensors, key = { it.name + it.vendor }) { sensor ->
-            OutlinedCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
+            OutlinedCard(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+            ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(sensor.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(4.dp))
@@ -429,13 +456,16 @@ private fun SystemCard(
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.5.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = color.copy(alpha = 0.15f),
+                    color = color.copy(alpha = 0.1f),
                     modifier = Modifier.size(40.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
@@ -443,7 +473,12 @@ private fun SystemCard(
                     }
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(text = title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold)
+                Text(
+                    text = title, 
+                    style = MaterialTheme.typography.titleMedium, 
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
             Spacer(modifier = Modifier.height(20.dp))
             content()
@@ -458,7 +493,17 @@ private fun DataLine(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+        Text(
+            label, 
+            style = MaterialTheme.typography.bodyMedium, 
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Medium
+        )
+        Text(
+            value, 
+            style = MaterialTheme.typography.bodyMedium, 
+            fontWeight = FontWeight.Bold, 
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }

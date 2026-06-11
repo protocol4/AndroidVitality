@@ -25,13 +25,17 @@ data class ResourceMonitorUiState(
     val sensors: List<SensorDetail> = emptyList(),
     val runtimeInfo: RuntimeInfo? = null,
     val includeSensorsInReport: Boolean = false,
-    val isDarkMode: Boolean = true,
+    val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val history: List<ResourceSnapshot> = emptyList()
 )
 
 class ResourceMonitorViewModel(application: Application) : AndroidViewModel(application) {
     private val collector = ResourceCollector(application)
-    private val _uiState = MutableStateFlow(ResourceMonitorUiState())
+    private val settingsRepository = SettingsRepository(application)
+    private val _uiState = MutableStateFlow(ResourceMonitorUiState(
+        themeMode = settingsRepository.getThemeMode(),
+        includeSensorsInReport = settingsRepository.shouldIncludeSensors()
+    ))
     val uiState: StateFlow<ResourceMonitorUiState> = _uiState.asStateFlow()
 
     init {
@@ -91,11 +95,13 @@ class ResourceMonitorViewModel(application: Application) : AndroidViewModel(appl
     }
 
     fun setIncludeSensorsInReport(include: Boolean) {
+        settingsRepository.setIncludeSensors(include)
         _uiState.update { it.copy(includeSensorsInReport = include) }
     }
 
-    fun toggleDarkMode() {
-        _uiState.update { it.copy(isDarkMode = !it.isDarkMode) }
+    fun setThemeMode(mode: ThemeMode) {
+        settingsRepository.setThemeMode(mode)
+        _uiState.update { it.copy(themeMode = mode) }
     }
 
     fun exportReport(): String {
