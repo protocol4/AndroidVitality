@@ -267,6 +267,8 @@ fun MainDiagnosticsScreen(
         item(key = "motherboard") { MotherboardCard(uiState.hardwareInfo) }
         item(key = "processor") { ProcessorCard(uiState.hardwareInfo) }
         item(key = "display") { DisplayCard(uiState.displayInfo) }
+        item(key = "network") { NetworkCard(uiState.networkInfo) }
+        item(key = "storage") { StorageCard(uiState.storageInfo) }
         item(key = "build") { BuildCard(uiState.hardwareInfo) }
         item(key = "sensors_btn") {
             Button(
@@ -286,11 +288,12 @@ fun MainDiagnosticsScreen(
 
 @Composable
 private fun SoftwareCard(info: HardwareInfo?) {
-    SystemCard(title = "Software & Version", icon = Icons.Default.Android, color = Color(0xFF4CAF50)) {
+    SystemCard(title = "Software & OS", icon = Icons.Default.Android, color = Color(0xFF4CAF50)) {
         DataLine("Android Version", "v${info?.androidVersion}")
         info?.vendorOsName?.let { DataLine(it, info.vendorOsVersion ?: "Unknown") }
         DataLine("SDK Level", "API ${info?.sdkInt}")
         DataLine("Security Patch", info?.securityPatch ?: "Unknown")
+        DataLine("Kernel", info?.kernelVersion ?: "Unknown")
     }
 }
 
@@ -352,6 +355,34 @@ private fun DisplayCard(info: DisplayInfo?) {
         DataLine("Refresh Rate", "${info?.refreshRate?.toInt()} Hz")
         DataLine("Density", "${info?.density} DPI")
         DataLine("Physical Size", info?.physicalSize ?: "Unknown")
+    }
+}
+
+@Composable
+private fun NetworkCard(info: NetworkInfo?) {
+    SystemCard(title = "Network Status", icon = Icons.Default.Public, color = Color(0xFFE91E63)) {
+        DataLine("Connection", info?.type ?: "Offline")
+        DataLine("Status", if (info?.isConnected == true) "Connected" else "Disconnected")
+    }
+}
+
+@Composable
+private fun StorageCard(info: StorageInfo?) {
+    SystemCard(title = "Storage Breakdown", icon = Icons.Default.Storage, color = Color(0xFF795548)) {
+        val total = (info?.internalTotal ?: 0L) / (1024.0 * 1024.0 * 1024.0)
+        val avail = (info?.internalAvailable ?: 0L) / (1024.0 * 1024.0 * 1024.0)
+        val used = total - avail
+        
+        DataLine("Internal Total", "%.2f GB".format(total))
+        DataLine("Available", "%.2f GB".format(avail))
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        LinearProgressIndicator(
+            progress = { if (total > 0) (used / total).toFloat() else 0f },
+            modifier = Modifier.fillMaxWidth().height(8.dp),
+            color = Color(0xFF795548),
+            strokeCap = androidx.compose.ui.graphics.StrokeCap.Round
+        )
     }
 }
 

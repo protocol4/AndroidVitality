@@ -116,6 +116,7 @@ class ResourceCollector(private val context: Context) {
             caps?.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) == true -> "Ethernet"
             else -> "Offline"
         }
+
         return NetworkInfo(
             type = type,
             isConnected = isConnected,
@@ -161,13 +162,14 @@ class ResourceCollector(private val context: Context) {
             sdkInt = Build.VERSION.SDK_INT,
             securityPatch = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Build.VERSION.SECURITY_PATCH else "Unknown",
             baseband = Build.getRadioVersion() ?: "Unknown",
+            vendorOsName = vendorOs.first,
+            vendorOsVersion = vendorOs.second,
             buildTags = Build.TAGS,
             buildType = Build.TYPE,
             buildUser = Build.USER,
             buildHost = Build.HOST,
             uptimeMillis = SystemClock.elapsedRealtime(),
-            vendorOsName = vendorOs.first,
-            vendorOsVersion = vendorOs.second
+            kernelVersion = System.getProperty("os.version") ?: "Unknown"
         )
     }
 

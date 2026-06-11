@@ -100,7 +100,8 @@ data class HardwareInfo(
     val buildType: String,
     val buildUser: String,
     val buildHost: String,
-    val uptimeMillis: Long
+    val uptimeMillis: Long,
+    val kernelVersion: String
 )
 
 @Immutable

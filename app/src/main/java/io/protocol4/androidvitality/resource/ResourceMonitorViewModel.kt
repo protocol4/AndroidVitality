@@ -39,7 +39,6 @@ class ResourceMonitorViewModel(application: Application) : AndroidViewModel(appl
     val uiState: StateFlow<ResourceMonitorUiState> = _uiState.asStateFlow()
 
     init {
-        // Load static info once on IO thread
         viewModelScope.launch(Dispatchers.IO) {
             val hw = collector.getHardwareInfo()
             val feat = collector.getFeatures()
@@ -55,7 +54,6 @@ class ResourceMonitorViewModel(application: Application) : AndroidViewModel(appl
                 displayInfo = disp
             ) }
             
-            // Start the monitoring loop
             startMonitoring()
         }
     }
