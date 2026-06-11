@@ -452,27 +452,138 @@ fun PrivacyPolicyScreen() {
 
 @Composable
 fun LicenseScreen() {
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp).verticalScroll(rememberScrollState())) {
-        Text("MIT License", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
-        Spacer(modifier = Modifier.height(24.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+
         Text(
-            "Copyright (c) 2026 Protocol 4\n\n" +
-            "Permission is hereby granted, free of charge, to any person obtaining a copy " +
-            "of this software and associated documentation files (the \"Software\"), to deal " +
-            "in the Software without restriction, including without limitation the rights " +
-            "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell " +
-            "copies of the Software, and to permit persons to whom the Software is " +
-            "furnished to do so, subject to the following conditions:\n\n" +
-            "The above copyright notice and this permission notice shall be included in all " +
-            "copies or substantial portions of the Software.\n\n" +
-            "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR " +
-            "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, " +
-            "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE " +
-            "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER " +
-            "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, " +
-            "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE " +
-            "SOFTWARE.",
-            style = MaterialTheme.typography.bodyMedium, lineHeight = 24.sp
+            "GNU LESSER GENERAL PUBLIC LICENSE v3",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Black
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            "GNU LESSER GENERAL PUBLIC LICENSE\n" +
+            "Version 3, 29 June 2007\n\n" +
+
+            "Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>\n" +
+            "Everyone is permitted to copy and distribute verbatim copies\n" +
+            "of this license document, but changing it is not allowed.\n\n" +
+
+            "This version of the GNU Lesser General Public License incorporates\n" +
+            "the terms and conditions of version 3 of the GNU General Public\n" +
+            "License, supplemented by the additional permissions listed below.\n\n" +
+
+            "0. Additional Definitions.\n\n" +
+
+            "As used herein, “this License” refers to version 3 of the GNU Lesser\n" +
+            "General Public License, and the “GNU GPL” refers to version 3 of the GNU\n" +
+            "General Public License.\n\n" +
+
+            "“The Library” refers to a covered work governed by this License,\n" +
+            "other than an Application or a Combined Work as defined below.\n\n" +
+
+            "An “Application” is any work that makes use of an interface provided\n" +
+            "by the Library, but which is not otherwise based on the Library.\n\n" +
+
+            "A “Combined Work” is a work produced by combining or linking an\n" +
+            "Application with the Library.\n\n" +
+
+            "The “Minimal Corresponding Source” for a Combined Work means the\n" +
+            "Corresponding Source for the Combined Work, excluding any source code\n" +
+            "for portions of the Combined Work that, considered in isolation, are\n" +
+            "based on the Application, and not on the Library.\n\n" +
+
+            "The “Corresponding Application Code” for a Combined Work means the\n" +
+            "object code and/or source code for the Application, including any data\n" +
+            "and utility programs needed for reproducing the Combined Work from the\n" +
+            "Application, but excluding the System Libraries of the Combined Work.\n\n" +
+
+            "1. Exception to Section 3 of the GNU GPL.\n\n" +
+
+            "You may convey a covered work under sections 3 and 4 of this License\n" +
+            "without being bound by section 3 of the GNU GPL.\n\n" +
+
+            "2. Conveying Modified Versions.\n\n" +
+
+            "If you modify a copy of the Library, and, in your modifications, a\n" +
+            "facility refers to a function or data to be supplied by an Application\n" +
+            "that uses the facility (other than as an argument passed when the\n" +
+            "facility is invoked), then you may convey a copy of the modified version:\n\n" +
+
+            "    a) under this License, provided that you make a good faith effort to\n" +
+            "    ensure that, in the event an Application does not supply the\n" +
+            "    function or data, the facility still operates, and performs whatever\n" +
+            "    part of its purpose remains meaningful, or\n\n" +
+
+            "    b) under the GNU GPL, with none of the additional permissions of\n" +
+            "    this License applicable to that copy.\n\n" +
+
+            "3. Object Code Incorporating Material from Library Header Files.\n\n" +
+
+            "The object code form of an Application may incorporate material from\n" +
+            "a header file that is part of the Library. You may convey such object\n" +
+            "code under terms of your choice, provided that you do both of the following:\n\n" +
+
+            "    a) Give prominent notice with each copy that the Library is used in it\n" +
+            "    and that the Library and its use are covered by this License.\n\n" +
+
+            "    b) Accompany the object code with a copy of the GNU GPL and this\n" +
+            "    license document.\n\n" +
+
+            "4. Combined Works.\n\n" +
+
+            "You may convey a Combined Work under terms of your choice that,\n" +
+            "taken together, effectively do not restrict modification of the portions\n" +
+            "of the Library contained in the Combined Work and reverse engineering\n" +
+            "for debugging such modifications, if you also do each of the following:\n\n" +
+
+            "    a) Give prominent notice that the Library is used in the work.\n\n" +
+            "    b) Include a copy of the GNU GPL.\n\n" +
+            "    c) For a Combined Work that displays copyright notices during\n" +
+            "    execution, include the Library copyright notice.\n\n" +
+
+            "    d) Do one of the following:\n\n" +
+
+            "        0) Convey the Minimal Corresponding Source under this License,\n" +
+            "        and the Corresponding Application Code in a form suitable for,\n" +
+            "        and under terms that permit, the user to recombine or relink\n" +
+            "        the Application with a modified version of the Combined Work.\n\n" +
+
+            "        1) Use a suitable shared library mechanism for linking with the\n" +
+            "        Library. A suitable mechanism is one that (a) uses at run time\n" +
+            "        a copy of the Library already present on the user's system,\n" +
+            "        and (b) will operate properly with a modified version of the\n" +
+            "        Library that is interface-compatible.\n\n" +
+
+            "    e) Provide Installation Information.\n\n" +
+
+            "5. Combined Libraries.\n\n" +
+
+            "You may place library facilities that are a work based on the Library\n" +
+            "side by side in a single library together with other library facilities\n" +
+            "that are not Applications and are not covered by this License, and\n" +
+            "convey such a combined library under terms of your choice, if you do\n" +
+            "each of the following:\n\n" +
+
+            "    a) Accompany the combined library with a copy of the same work based\n" +
+            "    on the Library, uncombined with any other library facilities.\n\n" +
+
+            "    b) Give prominent notice that part of it is a work based on the Library,\n" +
+            "    and explaining where to find the uncombined form of the same work.\n\n" +
+
+            "6. Revised Versions of the GNU Lesser General Public License.\n\n" +
+            "The Free Software Foundation may publish revised versions of the GNU\n" +
+            "Lesser General Public License.\n\n" +
+            "Each version is given a distinguishing version number.\n\n" +
+            "If the Library specifies 'or later version', you may choose that or any later version.\n",
+            style = MaterialTheme.typography.bodyMedium,
+            lineHeight = 24.sp
         )
     }
 }
