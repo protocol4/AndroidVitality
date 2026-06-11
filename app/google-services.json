@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "40054161563",
+    "project_id": "io-protocol4-androidvita-2a66c",
+    "storage_bucket": "io-protocol4-androidvita-2a66c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40054161563:android:836b0b3dd35e63d2ea863e",
+        "android_client_info": {
+          "package_name": "io.protocol4.androidvitality"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArcjZehJw2ES_CI7Qr4s3kw5cJTaEObfg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

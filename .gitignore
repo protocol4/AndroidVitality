@@ -1,0 +1,28 @@
+# Gradle
+.gradle/
+build/
+
+# IntelliJ
+*.iml
+.idea/
+.idea/workspace.xml
+.idea/libraries/
+.idea/modules.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/caches/
+
+# Local config
+local.properties
+.vscode
+
+# Log
+*.log
+
+# OS
+.DS_Store
+
+# Native
+.externalNativeBuild/
+.cxx/
+
